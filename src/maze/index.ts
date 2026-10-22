@@ -14,6 +14,12 @@ import type { GenerationParams, Maze, Point, WallShape } from "./types";
 
 export * from "./types";
 export { solve } from "./solver";
+export {
+    MAX_HISTORY,
+    pushHistory,
+    randomParams,
+    unseededRng,
+} from "./randomize";
 
 function dist2(a: Point, b: Point): number {
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;

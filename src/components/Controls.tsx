@@ -35,6 +35,10 @@ interface Props {
     onPage: (p: Partial<PageSettings>) => void;
     onShowSolution: (v: boolean) => void;
     onRandomize: () => void;
+    onRandomizeAll: () => void;
+    onUndoRandomize: () => void;
+    /** Number of randomizations that can still be undone. */
+    undoCount: number;
     onPrint: () => void;
     onDownloadSvg: () => void;
     onDownloadPng: () => void;
@@ -70,6 +74,22 @@ export function Controls(props: Props) {
                     {showSolution
                         ? `🙈 ${m.actions.hideSolution}`
                         : `👀 ${m.actions.showSolution}`}
+                </button>
+            </div>
+            <div className="button-row">
+                <button
+                    onClick={props.onRandomizeAll}
+                    title={m.actions.randomizeAllHint}
+                >
+                    🎰 {m.actions.randomizeAll}
+                </button>
+                <button
+                    onClick={props.onUndoRandomize}
+                    disabled={props.undoCount === 0}
+                    title={m.actions.undoRandomizeHint}
+                >
+                    ↶ {m.actions.undoRandomize}
+                    {props.undoCount > 0 ? ` (${props.undoCount})` : ""}
                 </button>
             </div>
 

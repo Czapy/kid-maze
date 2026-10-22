@@ -3,7 +3,7 @@ import type { Messages } from "./en";
 /** Hungarian dictionary. Typed against `Messages`, so a missing key is a compile error. */
 export const hu: Messages = {
     app: {
-        title: "Labirintus-készítő gyerekeknek",
+        title: "Labirintus készítő",
         stats: "{cells} cella · a megoldás hossza: {length}",
         language: "Nyelv",
     },
@@ -13,6 +13,12 @@ export const hu: Messages = {
         showSolution: "Megoldás mutatása",
         hideSolution: "Megoldás elrejtése",
         randomizeSeed: "Véletlen kezdőérték",
+        randomizeAll: "Lepj meg!",
+        randomizeAllHint:
+            "Mindent véletlenre állít a stílus kivételével: típus, méret, algoritmus, nehézség és kezdőérték",
+        undoRandomize: "Visszavonás",
+        undoRandomizeHint:
+            "Vissza az utolsó véletlenítés előtti labirintus-beállításokhoz",
         print: "Nyomtatás",
         svg: "SVG",
         png: "PNG",

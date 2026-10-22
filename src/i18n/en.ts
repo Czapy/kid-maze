@@ -1,7 +1,7 @@
 /** English dictionary. Its shape defines the `Messages` type every language must satisfy. */
 export const en = {
     app: {
-        title: "Kid Maze Maker",
+        title: "Maze Maker",
         stats: "{cells} cells · solution length {length}",
         language: "Language",
     },
@@ -11,6 +11,12 @@ export const en = {
         showSolution: "Show solution",
         hideSolution: "Hide solution",
         randomizeSeed: "Randomize seed",
+        randomizeAll: "Surprise me",
+        randomizeAllHint:
+            "Randomize everything except the style: type, size, algorithm, difficulty and seed",
+        undoRandomize: "Undo",
+        undoRandomizeHint:
+            "Go back to the maze settings before the last randomization",
         print: "Print",
         svg: "SVG",
         png: "PNG",

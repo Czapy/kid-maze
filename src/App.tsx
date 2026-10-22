@@ -5,7 +5,14 @@ import {
     type PaperSize,
 } from "./components/Controls";
 import { MazePreview, type MazePreviewHandle } from "./components/MazePreview";
-import { generateMaze, solve, type GenerationParams } from "./maze";
+import {
+    generateMaze,
+    pushHistory,
+    randomParams,
+    solve,
+    unseededRng,
+    type GenerationParams,
+} from "./maze";
 import { PresetsPanel } from "./components/PresetsPanel";
 import { LANGUAGES, useI18n, type Lang } from "./i18n";
 import { DEFAULT_STYLE, type MazeStyle } from "./render/style";
@@ -25,8 +32,8 @@ const makeDefaultParams = (): GenerationParams => ({
     type: "rectangular",
     algorithm: "backtracker",
     seed: randomSeed(),
-    cols: 15,
-    rows: 20,
+    cols: 10,
+    rows: 10,
     rings: 8,
     centerCells: 1,
     braid: 0,
@@ -151,6 +158,20 @@ export default function App() {
             seed: randomSeed(),
         }));
     }, []);
+
+    // Previous parameter sets, newest last. Only filled by "randomize everything".
+    const [history, setHistory] = useState<GenerationParams[]>([]);
+
+    const randomizeAll = useCallback(() => {
+        setHistory((h) => pushHistory(h, params));
+        setParams(randomParams(unseededRng));
+    }, [params]);
+
+    const undoRandomize = useCallback(() => {
+        if (!history.length) return;
+        setParams(history[history.length - 1]);
+        setHistory(history.slice(0, -1));
+    }, [history]);
 
     const currentConfig = useCallback((): PresetConfig => {
         const { seed: _seed, ...rest } = params;
@@ -287,6 +308,9 @@ export default function App() {
                     onPage={updatePage}
                     onShowSolution={setShowSolution}
                     onRandomize={randomize}
+                    onRandomizeAll={randomizeAll}
+                    onUndoRandomize={undoRandomize}
+                    undoCount={history.length}
                     onPrint={() => window.print()}
                     onDownloadSvg={downloadSvg}
                     onDownloadPng={downloadPng}
