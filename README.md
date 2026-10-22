@@ -24,7 +24,8 @@ works under `https://<user>.github.io/<repo>/` without further configuration.
 - **6 maze types**: rectangular, circular (with center goal), hexagonal,
   triangular, shaped silhouettes (heart, star, circle, cross, arrow), diamond.
 - **7 generation algorithms**: recursive backtracker, Prim's, Kruskal's,
-  Wilson's, Aldous-Broder, growing tree, hunt-and-kill.
+  Wilson's, Aldous-Broder, growing tree, hunt-and-kill (shown in the app as
+  "Wandering explorer").
 - **Difficulty controls**: size, twistiness, loops (dead-end removal),
   entrance/exit placement, reproducible seed.
 - **Style controls**: presets, wall thickness / ends / color, paper color,

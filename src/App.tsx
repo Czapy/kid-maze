@@ -16,10 +16,15 @@ import {
     type UserPreset,
 } from "./storage";
 
-const DEFAULT_PARAMS: GenerationParams = {
+function randomSeed(): number {
+    return Math.floor(Math.random() * 1_000_000);
+}
+
+/** Fresh defaults; each call picks a new random seed. */
+const makeDefaultParams = (): GenerationParams => ({
     type: "rectangular",
     algorithm: "backtracker",
-    seed: 12345,
+    seed: randomSeed(),
     cols: 15,
     rows: 20,
     rings: 8,
@@ -28,7 +33,7 @@ const DEFAULT_PARAMS: GenerationParams = {
     twistiness: 0.5,
     shape: "heart",
     farEnds: true,
-};
+});
 
 /** Paper sizes in millimetres (portrait). */
 const PAPER_MM: Record<PaperSize, [number, number]> = {
@@ -45,11 +50,11 @@ function paperDims(page: PageSettings): [number, number] {
 
 const DEFAULT_PAGE: PageSettings = { paper: "a4", orientation: "portrait" };
 
-const DEFAULTS = {
-    params: DEFAULT_PARAMS,
+const makeDefaults = () => ({
+    params: makeDefaultParams(),
     style: DEFAULT_STYLE,
     page: DEFAULT_PAGE,
-};
+});
 
 function newId(): string {
     return (
@@ -69,7 +74,7 @@ function download(filename: string, blob: Blob) {
 export default function App() {
     const { m, f, lang, setLang } = useI18n();
     // Read storage once, on first render only.
-    const [initial] = useState(() => loadState(DEFAULTS));
+    const [initial] = useState(() => loadState(makeDefaults()));
     const [params, setParams] = useState<GenerationParams>(initial.params);
     const [style, setStyle] = useState<MazeStyle>(initial.style);
     const [page, setPage] = useState<PageSettings>(initial.page);
@@ -143,7 +148,7 @@ export default function App() {
     const randomize = useCallback(() => {
         setParams((prev) => ({
             ...prev,
-            seed: Math.floor(Math.random() * 1_000_000),
+            seed: randomSeed(),
         }));
     }, []);
 
@@ -198,7 +203,7 @@ export default function App() {
     );
 
     const resetAll = useCallback(() => {
-        setParams(DEFAULT_PARAMS);
+        setParams(makeDefaultParams());
         setStyle(DEFAULT_STYLE);
         setPage(DEFAULT_PAGE);
         setShowSolution(false);
