@@ -9,7 +9,8 @@
         "preview": "vite preview",
         "typecheck": "tsc -b",
         "verify": "tsx scripts/verify.ts && tsx scripts/verify-storage.ts && tsx scripts/verify-i18n.ts",
-        "samples": "tsx scripts/render-samples.ts && tsx scripts/rasterize.ts"
+        "samples": "tsx scripts/render-samples.ts && tsx scripts/rasterize.ts",
+        "samples:symbols": "tsx scripts/render-symbols.ts && tsx scripts/rasterize.ts"
     },
     "dependencies": {
         "@svgdotjs/svg.js": "^3.2.4",

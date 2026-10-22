@@ -1,6 +1,12 @@
 export type FillMode = "none" | "solid" | "distance" | "checker";
 export type LineCap = "round" | "square" | "butt";
-export type MarkerStyle = "none" | "circles" | "emoji";
+export type MarkerStyle = "none" | "circles" | "emoji" | "symbols";
+
+/**
+ * Start/end symbol pairs for the printer-friendly 'symbols' marker style. They differ by
+ * shape, not color, and are drawn in the wall color, so they survive black-and-white printing.
+ */
+export type SymbolSet = "ringDot" | "arrowFlag" | "starSquare" | "letters";
 
 export interface MazeStyle {
     background: string;
@@ -21,6 +27,10 @@ export interface MazeStyle {
     /** Margin around the maze as a fraction of the maze's longest side. */
     margin: number;
     markerStyle: MarkerStyle;
+    symbolSet: SymbolSet;
+    /** Single characters shown by the 'letters' symbol set. */
+    startLetter: string;
+    endLetter: string;
     startEmoji: string;
     endEmoji: string;
     startColor: string;
@@ -49,6 +59,9 @@ export const DEFAULT_STYLE: MazeStyle = {
     frameColor: "#1f2937",
     margin: 0.06,
     markerStyle: "emoji",
+    symbolSet: "ringDot",
+    startLetter: "S",
+    endLetter: "E",
     startEmoji: "🐭",
     endEmoji: "🧀",
     startColor: "#16a34a",

@@ -45,7 +45,9 @@ works under `https://<user>.github.io/<repo>/` without further configuration.
   entrance/exit placement, reproducible seed.
 - **Style controls**: presets, wall thickness / ends / color, paper color,
   heavy frame, cell fill (solid, distance gradient, checkerboard), margin,
-  emoji or dot start/end markers, solution color / thickness / dashed, title.
+  emoji, colored dot, or printer-friendly symbol start/end markers (ring and
+  bullseye, arrow and flag, star and square, letters: shape only, drawn in the
+  wall color, so they work on a black-and-white printer), solution color / thickness / dashed, title.
 - **Saved settings**: your configuration is stored in `localStorage` and
   restored on reload.
 - **My presets**: a collapsible right-hand sidebar to save the current setup
