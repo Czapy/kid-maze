@@ -78,7 +78,7 @@ export function loadState(d: Defaults): PersistedState {
         ...d,
         showSolution: false,
         presets: [],
-        presetsOpen: true,
+        presetsOpen: false,
         locks: { ...NO_LOCKS },
     };
     try {
