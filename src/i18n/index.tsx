@@ -91,8 +91,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    // Keep the document language and the browser tab title in step with the UI language.
     useEffect(() => {
         document.documentElement.lang = lang;
+        document.title = DICTIONARIES[lang].app.title;
     }, [lang]);
 
     const value = useMemo<I18n>(

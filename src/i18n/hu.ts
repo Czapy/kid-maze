@@ -13,28 +13,28 @@ export const hu: Messages = {
         showSolution: "Megoldás mutatása",
         hideSolution: "Megoldás elrejtése",
         randomizeSeed: "Véletlen kezdőérték",
-        randomizeAll: "Lepj meg!",
+        randomizeAll: "Keverés!",
         randomizeAllHint:
             "Mindent véletlenre állít a stílus kivételével: típus, méret, algoritmus, nehézség és kezdőérték",
         undoRandomize: "Visszavonás",
         undoRandomizeHint:
-            "Vissza az utolsó véletlenítés előtti labirintus-beállításokhoz",
+            "Vissza az utolsó keverés előtti labirintus-beállításokhoz",
         redoRandomize: "Újra",
-        redoRandomizeHint: "A most visszavont véletlenítés helyreállítása",
+        redoRandomizeHint: "A most visszavont keverés helyreállítása",
         print: "Nyomtatás",
         svg: "SVG",
         png: "PNG",
     },
 
     locks: {
-        type: "Típus megtartása véletlenítéskor",
-        typeHint: "A „Lepj meg!” megtartja a labirintus típusát és sziluettjét",
-        size: "Méret megtartása véletlenítéskor",
+        type: "Típus megtartása keveréskor",
+        typeHint: "A „Keverés!” megtartja a labirintus típusát és sziluettjét",
+        size: "Méret megtartása keveréskor",
         sizeHint:
-            "A „Lepj meg!” megtartja a méretet, szükség esetén a típushoz igazítva",
-        difficulty: "Nehézség megtartása véletlenítéskor",
+            "A „Keverés!” megtartja a méretet, szükség esetén a típushoz igazítva",
+        difficulty: "Nehézség megtartása keveréskor",
         difficultyHint:
-            "A „Lepj meg!” megtartja az algoritmust, a kanyargósságot, a hurkokat és a be-/kijárat elhelyezését",
+            "A „Keverés!” megtartja az algoritmust, a kanyargósságot, a hurkokat és a be-/kijárat elhelyezését",
     },
 
     sections: {
