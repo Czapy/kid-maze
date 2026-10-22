@@ -67,7 +67,7 @@ export const DEFAULT_STYLE: MazeStyle = {
     startColor: "#16a34a",
     endColor: "#dc2626",
     solutionColor: "#ef4444",
-    solutionWidth: 0.28,
+    solutionWidth: 0.12,
     solutionDashed: false,
     title: "",
     titleColor: "#1f2937",
@@ -101,7 +101,7 @@ export const PRESETS: StylePreset[] = [
             wallWidth: 0.22,
             lineCap: "round",
             wallColor: "#0f172a",
-            solutionWidth: 0.35,
+            solutionWidth: 0.12,
         },
     },
     {
@@ -110,7 +110,7 @@ export const PRESETS: StylePreset[] = [
             wallWidth: 0.05,
             lineCap: "butt",
             wallColor: "#334155",
-            solutionWidth: 0.18,
+            solutionWidth: 0.08,
         },
     },
     {
