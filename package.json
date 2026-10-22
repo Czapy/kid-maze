@@ -1,0 +1,29 @@
+{
+    "name": "kid-maze",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc -b && vite build",
+        "preview": "vite preview",
+        "typecheck": "tsc -b",
+        "verify": "tsx scripts/verify.ts && tsx scripts/verify-storage.ts && tsx scripts/verify-i18n.ts",
+        "samples": "tsx scripts/render-samples.ts && tsx scripts/rasterize.ts"
+    },
+    "dependencies": {
+        "@svgdotjs/svg.js": "^3.2.4",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1"
+    },
+    "devDependencies": {
+        "@resvg/resvg-js": "^2.6.2",
+        "@types/react": "^18.3.12",
+        "@types/react-dom": "^18.3.1",
+        "@vitejs/plugin-react": "^4.3.4",
+        "svgdom": "^0.1.29",
+        "tsx": "^4.23.15",
+        "typescript": "^5.6.3",
+        "vite": "^5.4.11"
+    }
+}
