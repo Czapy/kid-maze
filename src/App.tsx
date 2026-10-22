@@ -6,12 +6,16 @@ import {
 } from "./components/Controls";
 import { MazePreview, type MazePreviewHandle } from "./components/MazePreview";
 import {
+    emptyUndo,
     generateMaze,
-    pushHistory,
     randomParams,
+    recordChange,
+    redo,
     solve,
+    undo,
     unseededRng,
     type GenerationParams,
+    type UndoState,
 } from "./maze";
 import { PresetsPanel } from "./components/PresetsPanel";
 import { LANGUAGES, useI18n, type Lang } from "./i18n";
@@ -160,18 +164,27 @@ export default function App() {
     }, []);
 
     // Previous parameter sets, newest last. Only filled by "randomize everything".
-    const [history, setHistory] = useState<GenerationParams[]>([]);
+    const [undoState, setUndoState] =
+        useState<UndoState<GenerationParams>>(emptyUndo);
 
     const randomizeAll = useCallback(() => {
-        setHistory((h) => pushHistory(h, params));
+        setUndoState((s) => recordChange(s, params));
         setParams(randomParams(unseededRng));
     }, [params]);
 
     const undoRandomize = useCallback(() => {
-        if (!history.length) return;
-        setParams(history[history.length - 1]);
-        setHistory(history.slice(0, -1));
-    }, [history]);
+        const step = undo(undoState, params);
+        if (!step) return;
+        setUndoState(step.state);
+        setParams(step.value);
+    }, [undoState, params]);
+
+    const redoRandomize = useCallback(() => {
+        const step = redo(undoState, params);
+        if (!step) return;
+        setUndoState(step.state);
+        setParams(step.value);
+    }, [undoState, params]);
 
     const currentConfig = useCallback((): PresetConfig => {
         const { seed: _seed, ...rest } = params;
@@ -310,7 +323,9 @@ export default function App() {
                     onRandomize={randomize}
                     onRandomizeAll={randomizeAll}
                     onUndoRandomize={undoRandomize}
-                    undoCount={history.length}
+                    onRedoRandomize={redoRandomize}
+                    canUndo={undoState.past.length > 0}
+                    canRedo={undoState.future.length > 0}
                     onPrint={() => window.print()}
                     onDownloadSvg={downloadSvg}
                     onDownloadPng={downloadPng}

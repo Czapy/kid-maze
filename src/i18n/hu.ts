@@ -19,6 +19,8 @@ export const hu: Messages = {
         undoRandomize: "Visszavonás",
         undoRandomizeHint:
             "Vissza az utolsó véletlenítés előtti labirintus-beállításokhoz",
+        redoRandomize: "Újra",
+        redoRandomizeHint: "A most visszavont véletlenítés helyreállítása",
         print: "Nyomtatás",
         svg: "SVG",
         png: "PNG",

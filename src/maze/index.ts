@@ -16,9 +16,13 @@ export * from "./types";
 export { solve } from "./solver";
 export {
     MAX_HISTORY,
-    pushHistory,
+    emptyUndo,
     randomParams,
+    recordChange,
+    redo,
+    undo,
     unseededRng,
+    type UndoState,
 } from "./randomize";
 
 function dist2(a: Point, b: Point): number {

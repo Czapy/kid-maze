@@ -17,6 +17,8 @@ export const en = {
         undoRandomize: "Undo",
         undoRandomizeHint:
             "Go back to the maze settings before the last randomization",
+        redoRandomize: "Redo",
+        redoRandomizeHint: "Restore the randomization you just undid",
         print: "Print",
         svg: "SVG",
         png: "PNG",

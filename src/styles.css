@@ -320,6 +320,18 @@ input[type="color"] {
     display: flex;
     gap: 8px;
 }
+/* Two buttons sharing the space of one regular button in a .button-row. */
+.button-pair {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    gap: 4px;
+}
+.button-pair button {
+    min-width: 0;
+    font-size: 18px;
+    line-height: 1;
+}
 button {
     flex: 1;
     padding: 8px 10px;

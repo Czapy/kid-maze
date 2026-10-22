@@ -37,8 +37,9 @@ interface Props {
     onRandomize: () => void;
     onRandomizeAll: () => void;
     onUndoRandomize: () => void;
-    /** Number of randomizations that can still be undone. */
-    undoCount: number;
+    onRedoRandomize: () => void;
+    canUndo: boolean;
+    canRedo: boolean;
     onPrint: () => void;
     onDownloadSvg: () => void;
     onDownloadPng: () => void;
@@ -83,14 +84,25 @@ export function Controls(props: Props) {
                 >
                     🎰 {m.actions.randomizeAll}
                 </button>
-                <button
-                    onClick={props.onUndoRandomize}
-                    disabled={props.undoCount === 0}
-                    title={m.actions.undoRandomizeHint}
-                >
-                    ↶ {m.actions.undoRandomize}
-                    {props.undoCount > 0 ? ` (${props.undoCount})` : ""}
-                </button>
+                {/* The pair shares the slot the single Undo button used to fill. */}
+                <div className="button-pair">
+                    <button
+                        onClick={props.onUndoRandomize}
+                        disabled={!props.canUndo}
+                        title={m.actions.undoRandomizeHint}
+                        aria-label={m.actions.undoRandomize}
+                    >
+                        ↶
+                    </button>
+                    <button
+                        onClick={props.onRedoRandomize}
+                        disabled={!props.canRedo}
+                        title={m.actions.redoRandomizeHint}
+                        aria-label={m.actions.redoRandomize}
+                    >
+                        ↷
+                    </button>
+                </div>
             </div>
 
             <Section title={m.sections.mazeType}>

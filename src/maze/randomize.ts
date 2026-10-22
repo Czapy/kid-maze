@@ -83,3 +83,60 @@ export function pushHistory<T>(
     const next = [...history, entry];
     return next.length > max ? next.slice(next.length - max) : next;
 }
+
+/** Undo/redo stacks of earlier values, newest last. */
+export interface UndoState<T> {
+    past: T[];
+    future: T[];
+}
+
+export const emptyUndo = <T>(): UndoState<T> => ({ past: [], future: [] });
+
+/**
+ * Records that `current` is being replaced by a new value. Starts a new branch, so anything
+ * that could previously be redone is discarded. The past is capped at `max`.
+ */
+export function recordChange<T>(
+    state: UndoState<T>,
+    current: T,
+    max: number = MAX_HISTORY,
+): UndoState<T> {
+    return { past: pushHistory(state.past, current, max), future: [] };
+}
+
+/**
+ * Steps back. Returns the value to restore and the new state, or null when there is
+ * nothing to undo. `current` goes onto the redo stack.
+ */
+export function undo<T>(
+    state: UndoState<T>,
+    current: T,
+): { value: T; state: UndoState<T> } | null {
+    if (!state.past.length) return null;
+    return {
+        value: state.past[state.past.length - 1],
+        state: {
+            past: state.past.slice(0, -1),
+            future: [...state.future, current],
+        },
+    };
+}
+
+/**
+ * Steps forward again after an undo. Returns the value to restore and the new state, or
+ * null when there is nothing to redo. `current` goes back onto the undo stack.
+ */
+export function redo<T>(
+    state: UndoState<T>,
+    current: T,
+    max: number = MAX_HISTORY,
+): { value: T; state: UndoState<T> } | null {
+    if (!state.future.length) return null;
+    return {
+        value: state.future[state.future.length - 1],
+        state: {
+            past: pushHistory(state.past, current, max),
+            future: state.future.slice(0, -1),
+        },
+    };
+}
