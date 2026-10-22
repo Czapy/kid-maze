@@ -6,6 +6,7 @@ import {
 } from "./components/Controls";
 import { MazePreview, type MazePreviewHandle } from "./components/MazePreview";
 import {
+    NO_LOCKS,
     emptyUndo,
     generateMaze,
     randomParams,
@@ -15,6 +16,7 @@ import {
     undo,
     unseededRng,
     type GenerationParams,
+    type RandomizeLocks,
     type UndoState,
 } from "./maze";
 import { PresetsPanel } from "./components/PresetsPanel";
@@ -92,6 +94,7 @@ export default function App() {
     const [showSolution, setShowSolution] = useState(initial.showSolution);
     const [presets, setPresets] = useState<UserPreset[]>(initial.presets);
     const [presetsOpen, setPresetsOpen] = useState(initial.presetsOpen);
+    const [locks, setLocks] = useState<RandomizeLocks>(initial.locks);
     const previewRef = useRef<MazePreviewHandle>(null);
 
     // Persist everything shortly after the last change (sliders fire many updates).
@@ -105,11 +108,12 @@ export default function App() {
                     showSolution,
                     presets,
                     presetsOpen,
+                    locks,
                 }),
             250,
         );
         return () => clearTimeout(t);
-    }, [params, style, page, showSolution, presets, presetsOpen]);
+    }, [params, style, page, showSolution, presets, presetsOpen, locks]);
 
     const maze = useMemo(() => generateMaze(params), [params]);
     const solution = useMemo(() => solve(maze, maze.start, maze.end), [maze]);
@@ -169,8 +173,13 @@ export default function App() {
 
     const randomizeAll = useCallback(() => {
         setUndoState((s) => recordChange(s, params));
-        setParams(randomParams(unseededRng));
-    }, [params]);
+        setParams(randomParams(unseededRng, params, locks));
+    }, [params, locks]);
+
+    const updateLocks = useCallback(
+        (l: Partial<RandomizeLocks>) => setLocks((prev) => ({ ...prev, ...l })),
+        [],
+    );
 
     const undoRandomize = useCallback(() => {
         const step = undo(undoState, params);
@@ -241,6 +250,7 @@ export default function App() {
         setStyle(DEFAULT_STYLE);
         setPage(DEFAULT_PAGE);
         setShowSolution(false);
+        setLocks({ ...NO_LOCKS });
     }, []);
 
     const downloadSvg = useCallback(() => {
@@ -326,6 +336,8 @@ export default function App() {
                     onRedoRandomize={redoRandomize}
                     canUndo={undoState.past.length > 0}
                     canRedo={undoState.future.length > 0}
+                    locks={locks}
+                    onLocks={updateLocks}
                     onPrint={() => window.print()}
                     onDownloadSvg={downloadSvg}
                     onDownloadPng={downloadPng}

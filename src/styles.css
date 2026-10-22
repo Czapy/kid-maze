@@ -320,6 +320,22 @@ input[type="color"] {
     display: flex;
     gap: 8px;
 }
+/* Keeps a group of settings fixed when randomizing. */
+.lock-toggle {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+    color: var(--muted);
+}
+.lock-toggle.locked {
+    background: #eef2ff;
+    border-color: var(--accent);
+    color: var(--accent-dark);
+}
+
 /* Two buttons sharing the space of one regular button in a .button-row. */
 .button-pair {
     flex: 1;

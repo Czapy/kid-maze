@@ -24,6 +24,17 @@ export const en = {
         png: "PNG",
     },
 
+    locks: {
+        type: "Keep type when randomizing",
+        typeHint: "Surprise me will keep the maze type and silhouette",
+        size: "Keep size when randomizing",
+        sizeHint:
+            "Surprise me will keep the size, fitted to the maze type if needed",
+        difficulty: "Keep difficulty when randomizing",
+        difficultyHint:
+            "Surprise me will keep the algorithm, twistiness, loops and entrance placement",
+    },
+
     sections: {
         mazeType: "Maze type",
         difficulty: "Difficulty & generation",

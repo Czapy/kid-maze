@@ -1,14 +1,18 @@
 import { useI18n } from "../i18n";
 import {
     ALGORITHMS,
+    CENTER_CELLS_LIMITS,
     MAZE_TYPES,
+    RINGS_LIMITS,
     SHAPES,
+    SIZE_LIMITS,
     type GenerationParams,
-    type MazeTypeId,
+    type RandomizeLocks,
 } from "../maze";
 import { PRESETS, applyPreset, type MazeStyle } from "../render/style";
 import {
     ColorField,
+    LockToggle,
     Section,
     Select,
     Slider,
@@ -40,22 +44,13 @@ interface Props {
     onRedoRandomize: () => void;
     canUndo: boolean;
     canRedo: boolean;
+    /** Which setting groups "Surprise me" keeps as they are. */
+    locks: RandomizeLocks;
+    onLocks: (l: Partial<RandomizeLocks>) => void;
     onPrint: () => void;
     onDownloadSvg: () => void;
     onDownloadPng: () => void;
 }
-
-const SIZE_LIMITS: Record<
-    MazeTypeId,
-    { cols: [number, number]; rows: [number, number] }
-> = {
-    rectangular: { cols: [3, 60], rows: [3, 60] },
-    circular: { cols: [3, 60], rows: [3, 60] },
-    hexagonal: { cols: [3, 40], rows: [3, 40] },
-    triangular: { cols: [2, 30], rows: [3, 40] },
-    shape: { cols: [10, 70], rows: [10, 70] },
-    diamond: { cols: [5, 61], rows: [5, 61] },
-};
 
 const percent = (v: number) => `${Math.round(v * 100)}%`;
 
@@ -106,6 +101,12 @@ export function Controls(props: Props) {
             </div>
 
             <Section title={m.sections.mazeType}>
+                <LockToggle
+                    label={m.locks.type}
+                    title={m.locks.typeHint}
+                    locked={props.locks.type}
+                    onChange={(type) => props.onLocks({ type })}
+                />
                 <div className="type-grid">
                     {MAZE_TYPES.map((mt) => (
                         <button
@@ -130,20 +131,27 @@ export function Controls(props: Props) {
                     />
                 )}
 
+                <LockToggle
+                    label={m.locks.size}
+                    title={m.locks.sizeHint}
+                    locked={props.locks.size}
+                    onChange={(size) => props.onLocks({ size })}
+                />
+
                 {t === "circular" ? (
                     <>
                         <Slider
                             label={m.fields.rings}
                             value={params.rings}
-                            min={3}
-                            max={25}
+                            min={RINGS_LIMITS[0]}
+                            max={RINGS_LIMITS[1]}
                             onChange={(rings) => props.onParams({ rings })}
                         />
                         <Slider
                             label={m.fields.centerCells}
                             value={params.centerCells}
-                            min={1}
-                            max={12}
+                            min={CENTER_CELLS_LIMITS[0]}
+                            max={CENTER_CELLS_LIMITS[1]}
                             onChange={(centerCells) =>
                                 props.onParams({ centerCells })
                             }
@@ -188,6 +196,12 @@ export function Controls(props: Props) {
             </Section>
 
             <Section title={m.sections.difficulty}>
+                <LockToggle
+                    label={m.locks.difficulty}
+                    title={m.locks.difficultyHint}
+                    locked={props.locks.difficulty}
+                    onChange={(difficulty) => props.onLocks({ difficulty })}
+                />
                 <Select
                     label={m.fields.algorithm}
                     value={params.algorithm}

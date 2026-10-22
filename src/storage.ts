@@ -1,5 +1,5 @@
 import type { PageSettings } from "./components/Controls";
-import type { GenerationParams } from "./maze";
+import { NO_LOCKS, type GenerationParams, type RandomizeLocks } from "./maze";
 import type { MazeStyle } from "./render/style";
 
 const KEY = "kid-maze:v1";
@@ -24,6 +24,8 @@ export interface PersistedState {
     showSolution: boolean;
     presets: UserPreset[];
     presetsOpen: boolean;
+    /** Which setting groups "Surprise me" keeps as they are. */
+    locks: RandomizeLocks;
 }
 
 type Defaults = Pick<PersistedState, "params" | "style" | "page">;
@@ -77,6 +79,7 @@ export function loadState(d: Defaults): PersistedState {
         showSolution: false,
         presets: [],
         presetsOpen: true,
+        locks: { ...NO_LOCKS },
     };
     try {
         const raw = localStorage.getItem(KEY);
@@ -96,6 +99,7 @@ export function loadState(d: Defaults): PersistedState {
                 typeof saved.presetsOpen === "boolean"
                     ? saved.presetsOpen
                     : true,
+            locks: mergeKnown(NO_LOCKS, saved.locks),
         };
     } catch {
         return fallback;

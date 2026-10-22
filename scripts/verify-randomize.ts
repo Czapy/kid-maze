@@ -4,10 +4,14 @@ import {
     SHAPES,
     generateMaze,
     solve,
+    type GenerationParams,
 } from "../src/maze";
 import {
     MAX_HISTORY,
+    NO_LOCKS,
+    SIZE_LIMITS,
     emptyUndo,
+    fitSizeToType,
     pushHistory,
     randomParams,
     recordChange,
@@ -23,7 +27,8 @@ const check = (name: string, ok: boolean, detail = "") => {
     console.log(ok ? "ok  " : "FAIL", name, ok ? "" : detail);
 };
 
-// Slider limits from Controls.tsx (kept in sync by hand; this test would catch drift).
+// An independent copy of the slider limits: if SIZE_LIMITS is changed by accident, the
+// "within slider limits" check below still compares against these known-good values.
 const LIMITS = {
     rectangular: { cols: [3, 60], rows: [3, 60] },
     circular: { cols: [3, 60], rows: [3, 60] },
@@ -141,6 +146,181 @@ check(
 check(
     "custom cap respected",
     JSON.stringify(pushHistory([1, 2, 3], 4, 3)) === "[2,3,4]",
+);
+
+// ---- Locks ----
+const baseParams: GenerationParams = {
+    type: "rectangular",
+    algorithm: "kruskal",
+    seed: 42,
+    cols: 33,
+    rows: 44,
+    rings: 20,
+    centerCells: 9,
+    braid: 0.35,
+    twistiness: 0.85,
+    shape: "star",
+    farEnds: false,
+};
+const TYPE_KEYS = ["type", "shape"] as const;
+const SIZE_KEYS = ["cols", "rows", "rings", "centerCells"] as const;
+const DIFF_KEYS = ["algorithm", "twistiness", "braid", "farEnds"] as const;
+
+const same = (
+    a: GenerationParams,
+    b: GenerationParams,
+    keys: readonly (keyof GenerationParams)[],
+) => keys.every((k) => a[k] === b[k]);
+
+let keptType = true;
+let keptSize = true;
+let keptDiff = true;
+let validLocked = "";
+let unlockedVaries = { type: false, size: false, diff: false };
+let allLockedOk = true;
+
+for (let i = 0; i < 400; i++) {
+    const r = createRng(1000 + i);
+
+    const t = randomParams(r, baseParams, {
+        type: true,
+        size: false,
+        difficulty: false,
+    });
+    if (!same(t, baseParams, TYPE_KEYS)) keptType = false;
+    if (!same(t, baseParams, SIZE_KEYS)) unlockedVaries.size = true;
+    if (!same(t, baseParams, DIFF_KEYS)) unlockedVaries.diff = true;
+
+    const s2 = randomParams(r, baseParams, {
+        type: false,
+        size: true,
+        difficulty: false,
+    });
+    if (s2.type !== baseParams.type) unlockedVaries.type = true;
+    if (!same(s2, baseParams, DIFF_KEYS)) unlockedVaries.diff = true;
+    // The kept size is fitted to the (possibly new) type, so check it matches the fit rule.
+    const fit = fitSizeToType(baseParams, s2.type);
+    if (!same(s2, { ...baseParams, ...fit }, SIZE_KEYS)) keptSize = false;
+
+    const d = randomParams(r, baseParams, {
+        type: false,
+        size: false,
+        difficulty: true,
+    });
+    if (!same(d, baseParams, DIFF_KEYS)) keptDiff = false;
+
+    // Combined locks: every combination must give a valid, generatable, solvable maze.
+    for (const lt of [false, true]) {
+        for (const ls of [false, true]) {
+            for (const ld of [false, true]) {
+                const p = randomParams(r, baseParams, {
+                    type: lt,
+                    size: ls,
+                    difficulty: ld,
+                });
+
+                const lim = SIZE_LIMITS[p.type];
+                const inRange =
+                    p.cols >= lim.cols[0] &&
+                    p.cols <= lim.cols[1] &&
+                    p.rows >= lim.rows[0] &&
+                    p.rows <= lim.rows[1];
+                if (!inRange)
+                    validLocked += ` range(${p.type}:${p.cols}x${p.rows})`;
+                if (p.type === "diamond" && p.cols % 2 === 0)
+                    validLocked += ` even-diamond(${p.cols})`;
+                try {
+                    const maze = generateMaze(p);
+                    if (!solve(maze, maze.start, maze.end).length)
+                        validLocked += ` unsolvable(${p.type})`;
+                } catch (e) {
+                    validLocked += ` threw(${p.type}): ${(e as Error).message}`;
+                }
+                if (lt && lt !== (p.type === baseParams.type))
+                    allLockedOk = false;
+            }
+        }
+    }
+}
+
+check("type lock keeps type and silhouette", keptType);
+check("size lock keeps size (fitted to the type)", keptSize);
+check("difficulty lock keeps all difficulty settings", keptDiff);
+check("unlocked size varies", unlockedVaries.size);
+check("unlocked difficulty varies", unlockedVaries.diff);
+check("unlocked type varies", unlockedVaries.type);
+check(
+    "every lock combination gives valid, solvable mazes",
+    !validLocked,
+    validLocked.slice(0, 300),
+);
+check("type lock holds in every combination", allLockedOk);
+
+// Kept size is fitted into a new type's limits
+const big = { cols: 50, rows: 55, rings: 20, centerCells: 9 };
+const tri = fitSizeToType(big, "triangular");
+check(
+    "oversized kept size clamped for triangular",
+    tri.cols === 30 && tri.rows === 40,
+    JSON.stringify(tri),
+);
+const tiny = fitSizeToType(
+    { cols: 3, rows: 3, rings: 3, centerCells: 1 },
+    "shape",
+);
+check(
+    "undersized kept size raised for shape",
+    tiny.cols === 10 && tiny.rows === 10,
+    JSON.stringify(tiny),
+);
+check(
+    "even size made odd for diamond",
+    fitSizeToType({ ...big, cols: 20 }, "diamond").cols % 2 === 1,
+);
+check(
+    "diamond at the upper limit stays odd and in range",
+    fitSizeToType({ ...big, cols: 100 }, "diamond").cols === 61,
+);
+check(
+    "in-range size is unchanged",
+    JSON.stringify(
+        fitSizeToType(
+            { cols: 12, rows: 14, rings: 8, centerCells: 1 },
+            "rectangular",
+        ),
+    ) === JSON.stringify({ cols: 12, rows: 14, rings: 8, centerCells: 1 }),
+);
+
+// Seed always re-rolls, even with everything locked
+const allLocked = { type: true, size: true, difficulty: true };
+const seeds = new Set<number>();
+let othersSame = true;
+for (let i = 0; i < 40; i++) {
+    const p = randomParams(createRng(i + 5), baseParams, allLocked);
+    seeds.add(p.seed);
+    const fit = fitSizeToType(baseParams, baseParams.type);
+    if (
+        !same(p, { ...baseParams, ...fit }, [
+            ...TYPE_KEYS,
+            ...SIZE_KEYS,
+            ...DIFF_KEYS,
+        ])
+    )
+        othersSame = false;
+}
+check("all locked: only the seed changes", othersSame);
+check("all locked: seed still varies", seeds.size > 30, String(seeds.size));
+
+// No current params means locks cannot apply
+check(
+    "locks without current params are ignored",
+    randomParams(createRng(3), undefined, allLocked).cols ===
+        randomParams(createRng(3)).cols,
+);
+check(
+    "no locks given equals unlocked",
+    JSON.stringify(randomParams(createRng(9), baseParams, NO_LOCKS)) ===
+        JSON.stringify(randomParams(createRng(9), baseParams)),
 );
 
 // Undo / redo model

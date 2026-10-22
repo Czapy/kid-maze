@@ -25,6 +25,60 @@ export const RANDOM_SIZE: Record<
 
 const RANDOM_RINGS: [number, number] = [5, 14];
 
+/** Slider limits per maze type. The controls and the randomizer both use these. */
+export const SIZE_LIMITS: Record<
+    MazeTypeId,
+    { cols: [number, number]; rows: [number, number] }
+> = {
+    rectangular: { cols: [3, 60], rows: [3, 60] },
+    circular: { cols: [3, 60], rows: [3, 60] },
+    hexagonal: { cols: [3, 40], rows: [3, 40] },
+    triangular: { cols: [2, 30], rows: [3, 40] },
+    shape: { cols: [10, 70], rows: [10, 70] },
+    diamond: { cols: [5, 61], rows: [5, 61] },
+};
+
+export const RINGS_LIMITS: [number, number] = [3, 25];
+export const CENTER_CELLS_LIMITS: [number, number] = [1, 12];
+
+/** Groups of settings that can be kept as they are when randomizing. */
+export interface RandomizeLocks {
+    type: boolean;
+    size: boolean;
+    difficulty: boolean;
+}
+
+export const NO_LOCKS: RandomizeLocks = {
+    type: false,
+    size: false,
+    difficulty: false,
+};
+
+const clamp = (v: number, [min, max]: [number, number]) =>
+    Math.min(max, Math.max(min, v));
+
+/**
+ * Fits a kept (locked) size into what `type` allows: within its slider limits, and odd for
+ * the diamond. Keeps the value as close to the original as possible.
+ */
+export function fitSizeToType(
+    p: Pick<GenerationParams, "cols" | "rows" | "rings" | "centerCells">,
+    type: MazeTypeId,
+): Pick<GenerationParams, "cols" | "rows" | "rings" | "centerCells"> {
+    const limits = SIZE_LIMITS[type];
+    let cols = clamp(p.cols, limits.cols);
+    if (type === "diamond" && cols % 2 === 0) {
+        // Even is invalid; step to the nearest odd value that is still within the limits.
+        cols = cols + 1 <= limits.cols[1] ? cols + 1 : cols - 1;
+    }
+    return {
+        cols,
+        rows: clamp(p.rows, limits.rows),
+        rings: clamp(p.rings, RINGS_LIMITS),
+        centerCells: clamp(p.centerCells, CENTER_CELLS_LIMITS),
+    };
+}
+
 /** Inclusive random integer in [min, max]. */
 function between(rng: Rng, [min, max]: [number, number]): number {
     return min + randInt(rng, max - min + 1);
@@ -39,29 +93,58 @@ function snap(v: number): number {
  * Picks a complete, random set of generation parameters (everything that is not style or
  * page related). The result is always within the ranges the controls allow.
  */
-export function randomParams(rng: Rng): GenerationParams {
-    const type = pick(rng, MAZE_TYPES).id;
-    const size = RANDOM_SIZE[type];
+export function randomParams(
+    rng: Rng,
+    current?: GenerationParams,
+    locks: RandomizeLocks = NO_LOCKS,
+): GenerationParams {
+    // Settings in a locked group keep their value from `current`; the rest are re-rolled.
+    // Without `current` there is nothing to keep, so locks have no effect.
+    const keep = current ? locks : NO_LOCKS;
 
-    let cols = between(rng, size.cols);
-    // The diamond is a single odd size (the slider only produces odd values).
-    if (type === "diamond" && cols % 2 === 0) cols += 1;
+    const type = keep.type ? current!.type : pick(rng, MAZE_TYPES).id;
+    const shape = keep.type ? current!.shape : pick(rng, SHAPES).id;
+
+    let size: Pick<GenerationParams, "cols" | "rows" | "rings" | "centerCells">;
+    if (keep.size) {
+        // The type may have changed, so the kept size must be made valid for it.
+        size = fitSizeToType(current!, type);
+    } else {
+        const range = RANDOM_SIZE[type];
+        let cols = between(rng, range.cols);
+        // The diamond is a single odd size (the slider only produces odd values).
+        if (type === "diamond" && cols % 2 === 0) cols += 1;
+        size = {
+            cols,
+            rows: between(rng, range.rows),
+            rings: between(rng, RANDOM_RINGS),
+            // Favor the center-goal layout (1) since it is the classic circular maze.
+            centerCells: rng() < 0.6 ? 1 : between(rng, [3, 8]),
+        };
+    }
+
+    const difficulty = keep.difficulty
+        ? {
+              algorithm: current!.algorithm,
+              twistiness: current!.twistiness,
+              braid: current!.braid,
+              farEnds: current!.farEnds,
+          }
+        : {
+              algorithm: pick(rng, ALGORITHMS).id,
+              // Mostly perfect mazes; occasionally add loops.
+              braid: rng() < 0.7 ? 0 : snap(rng() * 0.6),
+              twistiness: snap(rng()),
+              farEnds: rng() < 0.8,
+          };
 
     return {
         type,
-        algorithm: pick(rng, ALGORITHMS).id,
-        // Same range as the "randomize seed" button.
+        shape,
+        ...size,
+        ...difficulty,
+        // Always re-rolled, so "Surprise me" never repeats the same maze.
         seed: randInt(rng, 1_000_000),
-        cols,
-        rows: between(rng, size.rows),
-        rings: between(rng, RANDOM_RINGS),
-        // Favor the center-goal layout (1) since it is the classic circular maze.
-        centerCells: rng() < 0.6 ? 1 : between(rng, [3, 8]),
-        // Mostly perfect mazes; occasionally add loops.
-        braid: rng() < 0.7 ? 0 : snap(rng() * 0.6),
-        twistiness: snap(rng()),
-        shape: pick(rng, SHAPES).id,
-        farEnds: rng() < 0.8,
     };
 }
 

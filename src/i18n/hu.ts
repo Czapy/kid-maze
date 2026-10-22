@@ -26,6 +26,17 @@ export const hu: Messages = {
         png: "PNG",
     },
 
+    locks: {
+        type: "Típus megtartása véletlenítéskor",
+        typeHint: "A „Lepj meg!” megtartja a labirintus típusát és sziluettjét",
+        size: "Méret megtartása véletlenítéskor",
+        sizeHint:
+            "A „Lepj meg!” megtartja a méretet, szükség esetén a típushoz igazítva",
+        difficulty: "Nehézség megtartása véletlenítéskor",
+        difficultyHint:
+            "A „Lepj meg!” megtartja az algoritmust, a kanyargósságot, a hurkokat és a be-/kijárat elhelyezését",
+    },
+
     sections: {
         mazeType: "Labirintus típusa",
         difficulty: "Nehézség és generálás",

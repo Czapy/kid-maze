@@ -17,6 +17,34 @@ export function Section({
     );
 }
 
+/**
+ * Pill toggle that keeps a group of settings fixed when randomizing. Rendered as a button
+ * with aria-pressed so it is announced as a toggle.
+ */
+export function LockToggle({
+    label,
+    locked,
+    onChange,
+    title,
+}: {
+    label: string;
+    locked: boolean;
+    onChange: (locked: boolean) => void;
+    title?: string;
+}) {
+    return (
+        <button
+            type="button"
+            className={locked ? "lock-toggle locked" : "lock-toggle"}
+            aria-pressed={locked}
+            title={title}
+            onClick={() => onChange(!locked)}
+        >
+            {locked ? "🔒" : "🔓"} {label}
+        </button>
+    );
+}
+
 interface SliderProps {
     label: string;
     value: number;

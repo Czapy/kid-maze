@@ -15,13 +15,18 @@ import type { GenerationParams, Maze, Point, WallShape } from "./types";
 export * from "./types";
 export { solve } from "./solver";
 export {
+    CENTER_CELLS_LIMITS,
     MAX_HISTORY,
+    NO_LOCKS,
+    RINGS_LIMITS,
+    SIZE_LIMITS,
     emptyUndo,
     randomParams,
     recordChange,
     redo,
     undo,
     unseededRng,
+    type RandomizeLocks,
     type UndoState,
 } from "./randomize";
 
