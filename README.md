@@ -11,6 +11,14 @@ npm install
 npm run dev
 ```
 
+## Deploy (GitHub Pages)
+
+Pushing to `main` runs `.github/workflows/deploy.yml`, which installs, runs
+`npm run verify`, builds, and publishes `dist/` to GitHub Pages. One-time setup
+in the repository: **Settings -> Pages -> Build and deployment -> Source:
+GitHub Actions**. The build uses relative asset paths (`base: './'`), so it
+works under `https://<user>.github.io/<repo>/` without further configuration.
+
 ## Features
 
 - **6 maze types**: rectangular, circular (with center goal), hexagonal,
