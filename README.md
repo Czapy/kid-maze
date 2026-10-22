@@ -11,10 +11,25 @@ npm install
 npm run dev
 ```
 
+## Branches
+
+- `develop`: the default branch. All day-to-day work happens here (or in
+  feature branches merged into it). Pushes and pull requests run
+  `.github/workflows/ci.yml` (typecheck, verify, build).
+- `main`: releases only. Never commit to it directly; merge `develop` into it
+  to publish.
+
+```sh
+git switch main
+git merge --no-ff develop   # then: git push
+git switch develop
+```
+
 ## Deploy (GitHub Pages)
 
-Pushing to `main` runs `.github/workflows/deploy.yml`, which installs, runs
-`npm run verify`, builds, and publishes `dist/` to GitHub Pages. One-time setup
+Pushing to `main` (that is, merging `develop` into it) runs
+`.github/workflows/deploy.yml`, which installs, runs `npm run verify`, builds,
+and publishes `dist/` to GitHub Pages. One-time setup
 in the repository: **Settings -> Pages -> Build and deployment -> Source:
 GitHub Actions**. The build uses relative asset paths (`base: './'`), so it
 works under `https://<user>.github.io/<repo>/` without further configuration.
