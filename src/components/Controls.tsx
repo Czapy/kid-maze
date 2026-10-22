@@ -348,11 +348,61 @@ export function Controls(props: Props) {
                     value={style.markerStyle}
                     options={[
                         { id: "emoji", label: m.options.markers.emoji },
+                        { id: "symbols", label: m.options.markers.symbols },
                         { id: "circles", label: m.options.markers.circles },
                         { id: "none", label: m.options.markers.none },
                     ]}
                     onChange={(markerStyle) => props.onStyle({ markerStyle })}
                 />
+                {style.markerStyle === "symbols" && (
+                    <>
+                        <Select
+                            label={m.fields.symbolSet}
+                            value={style.symbolSet}
+                            options={[
+                                {
+                                    id: "ringDot",
+                                    label: `◯ → ◉  ${m.options.symbolSets.ringDot}`,
+                                },
+                                {
+                                    id: "arrowFlag",
+                                    label: `▶ → ⚑  ${m.options.symbolSets.arrowFlag}`,
+                                },
+                                {
+                                    id: "starSquare",
+                                    label: `☆ → ■  ${m.options.symbolSets.starSquare}`,
+                                },
+                                {
+                                    id: "letters",
+                                    label: `Ⓢ → Ⓔ  ${m.options.symbolSets.letters}`,
+                                },
+                            ]}
+                            onChange={(symbolSet) =>
+                                props.onStyle({ symbolSet })
+                            }
+                        />
+                        {style.symbolSet === "letters" && (
+                            <div className="color-row">
+                                <TextField
+                                    label={m.fields.start}
+                                    value={style.startLetter}
+                                    maxLength={1}
+                                    onChange={(startLetter) =>
+                                        props.onStyle({ startLetter })
+                                    }
+                                />
+                                <TextField
+                                    label={m.fields.end}
+                                    value={style.endLetter}
+                                    maxLength={1}
+                                    onChange={(endLetter) =>
+                                        props.onStyle({ endLetter })
+                                    }
+                                />
+                            </div>
+                        )}
+                    </>
+                )}
                 {style.markerStyle === "emoji" && (
                     <div className="color-row">
                         <TextField

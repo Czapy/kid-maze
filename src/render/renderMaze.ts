@@ -274,6 +274,10 @@ function drawMarker(
     which: "start" | "end",
 ) {
     if (style.markerStyle === "none") return;
+    if (style.markerStyle === "symbols") {
+        drawSymbol(g, at, style, which);
+        return;
+    }
     const color = which === "start" ? style.startColor : style.endColor;
     if (style.markerStyle === "circles") {
         g.circle(0.5)
@@ -290,6 +294,90 @@ function drawMarker(
             family: "Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif",
         })
         .center(at.x, at.y);
+}
+
+/** Points of a regular star centered on `at`, with the first tip pointing up. */
+function starPoints(at: Point, outer: number, inner: number): string {
+    const pts: string[] = [];
+    for (let i = 0; i < 10; i++) {
+        const r = i % 2 === 0 ? outer : inner;
+        const a = -Math.PI / 2 + (i * Math.PI) / 5;
+        pts.push(`${f(at.x + Math.cos(a) * r)},${f(at.y + Math.sin(a) * r)}`);
+    }
+    return pts.join(" ");
+}
+
+/**
+ * Printer-friendly markers: one color only (the wall color), told apart by shape.
+ * Hollow shapes are filled with the paper color so they read well over cell fills.
+ */
+function drawSymbol(
+    g: ReturnType<Svg["group"]>,
+    at: Point,
+    style: MazeStyle,
+    which: "start" | "end",
+) {
+    const ink = style.wallColor;
+    const paper = style.background;
+    const line = { color: ink, width: 0.07, linejoin: "round" as const };
+    const isStart = which === "start";
+
+    switch (style.symbolSet) {
+        case "ringDot": {
+            // Start: hollow ring. End: bullseye (ring with a solid center).
+            g.circle(0.56).fill(paper).stroke(line).center(at.x, at.y);
+            if (!isStart) g.circle(0.26).fill(ink).center(at.x, at.y);
+            break;
+        }
+        case "arrowFlag": {
+            if (isStart) {
+                // Right-pointing triangle ("play" / go).
+                const s = 0.3;
+                g.polygon(
+                    `${f(at.x - s * 0.7)},${f(at.y - s)} ${f(at.x + s)},${f(at.y)} ${f(at.x - s * 0.7)},${f(at.y + s)}`,
+                )
+                    .fill(paper)
+                    .stroke(line);
+            } else {
+                // Flag: a pole with a solid pennant.
+                const top = at.y - 0.38;
+                const bottom = at.y + 0.38;
+                const x = at.x - 0.2;
+                g.polygon(
+                    `${f(x)},${f(top)} ${f(x + 0.58)},${f(top + 0.2)} ${f(x)},${f(top + 0.4)}`,
+                ).fill(ink);
+                g.line(x, top, x, bottom).stroke({
+                    color: ink,
+                    width: 0.07,
+                    linecap: "round",
+                });
+            }
+            break;
+        }
+        case "starSquare": {
+            if (isStart) {
+                g.polygon(starPoints(at, 0.34, 0.15))
+                    .fill(paper)
+                    .stroke(line);
+            } else {
+                g.rect(0.5, 0.5).radius(0.04).fill(ink).center(at.x, at.y);
+            }
+            break;
+        }
+        case "letters": {
+            g.circle(0.64).fill(paper).stroke(line).center(at.x, at.y);
+            g.text(isStart ? style.startLetter : style.endLetter)
+                .font({
+                    size: 0.42,
+                    anchor: "middle",
+                    weight: "bold",
+                    family: style.fontFamily,
+                })
+                .fill(ink)
+                .center(at.x, at.y);
+            break;
+        }
+    }
 }
 
 /** Serialized, standalone SVG markup for download. */

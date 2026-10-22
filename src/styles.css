@@ -177,9 +177,12 @@ button:disabled {
 .sidebar {
     grid-area: side;
     overflow-y: auto;
+    /* Reserve the scrollbar's space so content doesn't shift when it appears. */
+    scrollbar-gutter: stable;
     background: var(--panel);
     border-right: 1px solid var(--border);
-    padding: 12px;
+    /* Extra space on the right keeps the content clear of the scrollbar. */
+    padding: 12px 6px 12px 12px;
 }
 
 .stage {
