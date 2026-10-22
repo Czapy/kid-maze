@@ -79,8 +79,8 @@ export const hu: Messages = {
         loops: "Hurkok (zsákutcák megszüntetése)",
         farEnds: "Bejárat és kijárat távol egymástól",
         seed: "Kezdőérték",
-        preset: "Előbeállítás",
-        choosePreset: "Válassz előbeállítást…",
+        preset: "Sablon",
+        choosePreset: "Válassz sablont…",
         wallThickness: "Falvastagság",
         wallEnds: "Falvégek",
         walls: "Falak",
@@ -128,23 +128,23 @@ export const hu: Messages = {
     },
 
     presets: {
-        title: "Saját előbeállítások",
-        expand: "Előbeállítások kinyitása",
-        collapse: "Előbeállítások összecsukása",
+        title: "Saját sablonok",
+        expand: "Sablonok kinyitása",
+        collapse: "Sablonok összecsukása",
         description:
-            "Az előbeállítás a labirintus típusát, méretét, algoritmusát, stílusát és az oldalbeállításokat menti (a kezdőértéket nem).",
+            "A sablon a labirintus típusát, méretét, algoritmusát, stílusát és az oldalbeállításokat menti (a kezdőértéket nem).",
         namePlaceholder: "Név a jelenlegi beállításhoz…",
         save: "Mentés",
-        empty: "Még nincs előbeállításod. Állíts be egy tetszetős labirintust, és mentsd el ide.",
-        apply: "Előbeállítás alkalmazása",
+        empty: "Még nincs sablonod. Állíts be egy tetszetős labirintust, és mentsd el ide.",
+        apply: "Sablon alkalmazása",
         rename: "Átnevezés",
         overwrite: "Felülírás a jelenlegi beállítással",
         delete: "Törlés",
         confirmOverwrite:
-            "Felülírod a(z) „{name}” előbeállítást a jelenlegi beállítással?",
-        confirmDelete: "Törlöd a(z) „{name}” előbeállítást?",
+            "Felülírod a(z) „{name}” sablont a jelenlegi beállítással?",
+        confirmDelete: "Törlöd a(z) „{name}” sablont?",
         resetAll: "Beállítások visszaállítása alapértelmezettre",
         confirmReset:
-            "Visszaállítod az összes beállítást alapértelmezettre? A mentett előbeállításaid megmaradnak.",
+            "Visszaállítod az összes beállítást alapértelmezettre? A mentett sablonjaid megmaradnak.",
     },
 };
