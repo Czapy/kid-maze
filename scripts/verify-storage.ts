@@ -40,7 +40,7 @@ const KEY = "kid-maze:v1";
 let s = loadState(defaults);
 check(
     "empty storage gives defaults",
-    s.params.cols === 15 && s.presets.length === 0 && s.presetsOpen,
+    s.params.cols === 15 && s.presets.length === 0 && s.presetsOpen === false,
 );
 
 // Round trip
